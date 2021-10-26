@@ -6,8 +6,13 @@
 
   <ItemGroup>
     <PackageReference Include="Eps.Service.Extensions.Logging" Version="0.9.1" />
+    <PackageReference Include="Eps.Service.Extensions.Monitoring" Version="0.2.0" />
     <PackageReference Include="Eps.Service.Extensions.Swagger" Version="3.6.0" />
     <PackageReference Include="Eps.Service.Extensions.Validation" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Eps.Service.Demo.Monitoring.API\Eps.Service.Demo.Monitoring.API.csproj" />
   </ItemGroup>
 
 
