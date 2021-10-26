@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Eps.Service.Extensions.Logging;
+using Eps.Service.Extensions.Monitoring;
 using Eps.Service.Extensions.Swagger;
 using Eps.Service.Extensions.Validation;
 using Microsoft.Extensions.Logging;
@@ -49,7 +50,8 @@ namespace Eps.Service.Demo.Monitoring
 
                 app.LogStartup(logger, assemblyReader);
                 app.UseLogging(loggerFactory);
-                
+                app.UseMonitoring(Configuration);
+
 
                 if (env.IsDevelopment())
                 {
