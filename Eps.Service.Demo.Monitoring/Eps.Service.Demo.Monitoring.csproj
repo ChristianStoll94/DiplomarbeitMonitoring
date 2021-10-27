@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Elastic.CommonSchema.Serilog" Version="1.5.3" />
     <PackageReference Include="Eps.Service.Extensions.Logging" Version="0.9.1" />
     <PackageReference Include="Eps.Service.Extensions.Monitoring" Version="0.2.0" />
     <PackageReference Include="Eps.Service.Extensions.Swagger" Version="3.6.0" />
     <PackageReference Include="Eps.Service.Extensions.Validation" Version="0.1.0" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
   </ItemGroup>
 
   <ItemGroup>
