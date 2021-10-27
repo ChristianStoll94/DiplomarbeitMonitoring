@@ -14,6 +14,7 @@ using Eps.Service.Extensions.Validation;
 using Microsoft.Extensions.Logging;
 using App.Metrics;
 using App.Metrics.Formatters.Prometheus;
+using Elastic.Apm.NetCoreAll;
 using Eps.Service.Extensions.Health;
 
 namespace Eps.Service.Demo.Monitoring
@@ -87,7 +88,7 @@ namespace Eps.Service.Demo.Monitoring
                 {
                     app.UseDeveloperExceptionPage();
                 }
-
+                
                 app.UseRouting();
                 app.UseAuthorization();
 

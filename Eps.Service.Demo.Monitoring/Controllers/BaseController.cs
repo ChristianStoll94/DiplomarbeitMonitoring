@@ -19,14 +19,12 @@ namespace Eps.Service.Demo.Monitoring.Controllers
 
         protected void LogCommand(string methodName, Command command)
         {
-            _logger.LogInformation(methodName + "; Command; " + ((command == null) ? "NULL" : command.ToString()));
+            _logger.LogInformation("{MethodName} ; Command; {Command} ; UniqueId; {UniqueId} ; Identification; {Identification}", methodName, command.GetType().Name, command.UniqueId, command.Identification);
         }
 
         protected void LogResponse(string methodName, Response response, DateTime beginExecutionTime, DateTime endExecutionTime)
         {
-            _logger.LogInformation(methodName + "; " +
-                                   "Response; " + ((response == null) ? "NULL" : response.ToString()) + "; " +
-                                   "ExecutionTime; " + (endExecutionTime - beginExecutionTime).ToString("c"));
+            _logger.LogInformation("{0} ; Response; {1} ; ExecutionTime {2}", methodName, ((response == null) ? "NULL" : response.ToString()), (endExecutionTime - beginExecutionTime).ToString("c"));
         }
     }
 }

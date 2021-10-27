@@ -50,11 +50,13 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     {
                         response = ExecuteCommand(command);
                     }
+
+                    throw new NullReferenceException("TestException");
                 }
                 catch (Exception ex)
                 {
                     string errorText = "Unexpected Exception; Message; " + ex.Message;
-                    _logger.LogError(ex, nameof(Execute) + "; " + errorText);
+                    _logger.LogError(ex, "{methodName} ; {errorText}", nameof(Execute), errorText);
                     response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnexpectedException, errorText);
                 }
                 finally
