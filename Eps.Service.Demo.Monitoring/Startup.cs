@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using Eps.Framework.Reflection;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,8 @@ using Eps.Service.Extensions.Monitoring;
 using Eps.Service.Extensions.Swagger;
 using Eps.Service.Extensions.Validation;
 using Microsoft.Extensions.Logging;
+using App.Metrics;
+using App.Metrics.Formatters.Prometheus;
 
 namespace Eps.Service.Demo.Monitoring
 {
@@ -38,6 +41,29 @@ namespace Eps.Service.Demo.Monitoring
             services.AddValidation();
             //services.AddTransient<IValidator<TestCommand>, TestCommandValidator>();
 
+            //Metrics registration
+            var metrics = AppMetrics.CreateDefaultBuilder()
+                .Configuration.Configure(options =>
+                {
+                    options.Enabled = true;
+                    options.ReportingEnabled = true;
+                })
+                .Report.ToTextFile(@"C:\Projects\metrics.txt", TimeSpan.FromSeconds(4))
+                .OutputMetrics.AsPrometheusPlainText()
+                .OutputMetrics.AsPrometheusProtobuf()
+                .Build();
+
+            services.AddMetrics(metrics);
+            services.AddMetricsReportingHostedService();
+            //services.AddAppMetricsHealthPublishing();
+            services.AddMetricsEndpoints(options =>
+                options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
+                    .OfType<MetricsPrometheusTextOutputFormatter>().First());
+            services.AddMetricsEndpoints(options =>
+                options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters
+                    .OfType<MetricsPrometheusProtobufOutputFormatter>().First());
+
+
             services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
 
         }
@@ -51,6 +77,9 @@ namespace Eps.Service.Demo.Monitoring
                 app.LogStartup(logger, assemblyReader);
                 app.UseLogging(loggerFactory);
                 app.UseMonitoring(Configuration);
+
+
+                app.UseMetricsAllEndpoints();
 
 
                 if (env.IsDevelopment())

@@ -1,4 +1,5 @@
 ﻿using System;
+using App.Metrics;
 using Eps.Framework.Reflection;
 using Eps.Service.Demo.Monitoring.API;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,19 @@ namespace Eps.Service.Demo.Monitoring.Controllers
     public class WelcomeController : BaseController
     {
         private AssemblyReader _assemblyHelper;
+        private readonly IMetrics _metrics;
 
-        public WelcomeController(ILogger<WelcomeController> logger, AssemblyReader assemblyHelper)
+        public WelcomeController(IMetrics metrics, ILogger<WelcomeController> logger, AssemblyReader assemblyHelper)
             : base(logger)
         {
             _assemblyHelper = assemblyHelper;
+            _metrics = metrics;
         }
 
         [HttpGet]
         public WelcomeResponse Get()
         {
+            _metrics.Measure.Counter.Increment(MetricsRegistry.SampleCounter);
             return Execute(new WelcomeCommand());
         }
 
