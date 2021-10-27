@@ -10,6 +10,7 @@
     <PackageReference Include="App.Metrics.Formatters.Prometheus" Version="4.2.0" />
     <PackageReference Include="App.Metrics.Reporting.TextFile" Version="4.2.0" />
     <PackageReference Include="Elastic.CommonSchema.Serilog" Version="1.5.3" />
+    <PackageReference Include="Eps.Service.Extensions.Health" Version="0.2.0" />
     <PackageReference Include="Eps.Service.Extensions.Logging" Version="0.9.1" />
     <PackageReference Include="Eps.Service.Extensions.Monitoring" Version="0.2.0" />
     <PackageReference Include="Eps.Service.Extensions.Swagger" Version="3.6.0" />

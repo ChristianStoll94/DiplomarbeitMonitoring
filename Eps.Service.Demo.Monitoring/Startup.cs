@@ -14,6 +14,7 @@ using Eps.Service.Extensions.Validation;
 using Microsoft.Extensions.Logging;
 using App.Metrics;
 using App.Metrics.Formatters.Prometheus;
+using Eps.Service.Extensions.Health;
 
 namespace Eps.Service.Demo.Monitoring
 {
@@ -52,10 +53,9 @@ namespace Eps.Service.Demo.Monitoring
                 .OutputMetrics.AsPrometheusPlainText()
                 .OutputMetrics.AsPrometheusProtobuf()
                 .Build();
-
             services.AddMetrics(metrics);
             services.AddMetricsReportingHostedService();
-            //services.AddAppMetricsHealthPublishing();
+            services.AddAppMetricsHealthPublishing();
             services.AddMetricsEndpoints(options =>
                 options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
                     .OfType<MetricsPrometheusTextOutputFormatter>().First());
@@ -63,6 +63,7 @@ namespace Eps.Service.Demo.Monitoring
                 options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters
                     .OfType<MetricsPrometheusProtobufOutputFormatter>().First());
 
+            services.AddHealth(Configuration);
 
             services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
 
@@ -93,6 +94,7 @@ namespace Eps.Service.Demo.Monitoring
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapHealth();
                 });
 
                 app.UseSwagger(assemblyReader, Configuration);
