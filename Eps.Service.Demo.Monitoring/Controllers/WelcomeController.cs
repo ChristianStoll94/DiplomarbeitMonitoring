@@ -11,20 +11,17 @@ namespace Eps.Service.Demo.Monitoring.Controllers
     [Route("[controller]")]
     public class WelcomeController : BaseController
     {
-        private AssemblyReader _assemblyHelper;
-        private readonly IMetrics _metrics;
+        private readonly AssemblyReader _assemblyHelper;
 
-        public WelcomeController(IMetrics metrics, ILogger<WelcomeController> logger, AssemblyReader assemblyHelper)
+        public WelcomeController(ILogger<WelcomeController> logger, AssemblyReader assemblyHelper)
             : base(logger)
         {
             _assemblyHelper = assemblyHelper;
-            _metrics = metrics;
         }
 
         [HttpGet]
         public WelcomeResponse Get()
         {
-            _metrics.Measure.Counter.Increment(MetricsRegistry.SampleCounter);
             return Execute(new WelcomeCommand());
         }
 
@@ -50,8 +47,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     {
                         response = ExecuteCommand(command);
                     }
-
-                    throw new NullReferenceException("TestException");
                 }
                 catch (Exception ex)
                 {

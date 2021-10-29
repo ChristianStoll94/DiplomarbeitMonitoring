@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:58526/weatherforecast",
+      "launchUrl": "http://localhost:58526/welcome",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

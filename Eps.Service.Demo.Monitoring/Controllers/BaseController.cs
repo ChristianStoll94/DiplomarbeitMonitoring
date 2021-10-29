@@ -24,7 +24,22 @@ namespace Eps.Service.Demo.Monitoring.Controllers
 
         protected void LogResponse(string methodName, Response response, DateTime beginExecutionTime, DateTime endExecutionTime)
         {
-            _logger.LogInformation("{0} ; Response; {1} ; ExecutionTime {2}", methodName, ((response == null) ? "NULL" : response.ToString()), (endExecutionTime - beginExecutionTime).ToString("c"));
+            _logger.LogInformation("{MethodName} ; Response; {Response} ; ExecutionTime {ExecutionTime}", methodName, ((response == null) ? "NULL" : response.ToString()), (endExecutionTime - beginExecutionTime).ToString("c"));
         }
+
+        protected void ValidateLog(string methodName, Command command, Response response)
+        {
+            if (command != null && response != null)
+            {
+                if (command.UniqueId != response.UniqueId)
+                {
+                    string errorText = "Changed uniqueId detected; " +
+                                       "CommandId; " + command.UniqueId.ToString() + "; " +
+                                       "ResponseId; " + response.UniqueId.ToString();
+                    _logger.LogWarning(nameof(methodName) + "; " + errorText);
+                }
+            }
+        }
+
     }
 }

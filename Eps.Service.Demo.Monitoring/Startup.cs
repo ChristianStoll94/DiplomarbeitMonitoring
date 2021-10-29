@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using App.Metrics;
 using App.Metrics.Formatters.Prometheus;
 using Elastic.Apm.NetCoreAll;
+using Elastic.CommonSchema.Serilog;
+using Eps.Service.Demo.Monitoring.Services;
 using Eps.Service.Extensions.Health;
 
 namespace Eps.Service.Demo.Monitoring
@@ -31,6 +33,10 @@ namespace Eps.Service.Demo.Monitoring
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddHostedService<HostedService>();
+
+
             services.Configure<ApplicationSettings>(Configuration.GetSection("ApplicationSettings"));
 
             services.AddSingleton(new AssemblyReader(Assembly.GetExecutingAssembly()));
@@ -50,16 +56,16 @@ namespace Eps.Service.Demo.Monitoring
                     options.Enabled = true;
                     options.ReportingEnabled = true;
                 })
-                .Report.ToTextFile(@"C:\Projects\metrics.txt", TimeSpan.FromSeconds(4))
-                .OutputMetrics.AsPrometheusPlainText()
+                //.Report.ToTextFile(@"C:\Projects\metrics.txt", TimeSpan.FromSeconds(4))
+                //.OutputMetrics.AsPrometheusPlainText()
                 .OutputMetrics.AsPrometheusProtobuf()
                 .Build();
             services.AddMetrics(metrics);
             services.AddMetricsReportingHostedService();
             services.AddAppMetricsHealthPublishing();
-            services.AddMetricsEndpoints(options =>
-                options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
-                    .OfType<MetricsPrometheusTextOutputFormatter>().First());
+            //services.AddMetricsEndpoints(options =>
+            //    options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
+            //        .OfType<MetricsPrometheusTextOutputFormatter>().First());
             services.AddMetricsEndpoints(options =>
                 options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters
                     .OfType<MetricsPrometheusProtobufOutputFormatter>().First());
@@ -78,8 +84,8 @@ namespace Eps.Service.Demo.Monitoring
 
                 app.LogStartup(logger, assemblyReader);
                 app.UseLogging(loggerFactory);
-                app.UseMonitoring(Configuration);
 
+                app.UseMonitoring(Configuration);
 
                 app.UseMetricsAllEndpoints();
 
