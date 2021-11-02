@@ -33,9 +33,7 @@ namespace Eps.Service.Demo.Monitoring
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddHostedService<HostedService>();
-
 
             services.Configure<ApplicationSettings>(Configuration.GetSection("ApplicationSettings"));
 
@@ -81,14 +79,10 @@ namespace Eps.Service.Demo.Monitoring
         {
             try
             {
-
                 app.LogStartup(logger, assemblyReader);
                 app.UseLogging(loggerFactory);
 
                 app.UseMonitoring(Configuration);
-
-                app.UseMetricsAllEndpoints();
-
 
                 if (env.IsDevelopment())
                 {
@@ -97,6 +91,8 @@ namespace Eps.Service.Demo.Monitoring
                 
                 app.UseRouting();
                 app.UseAuthorization();
+
+                app.UseMetricsAllEndpoints();
 
                 app.UseEndpoints(endpoints =>
                 {

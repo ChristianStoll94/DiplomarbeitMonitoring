@@ -1,4 +1,5 @@
-﻿using Eps.Framework.Logging.Extensions.Pattern;
+﻿using Destructurama.Attributed;
+using Eps.Framework.Logging.Extensions.Pattern;
 using Eps.Framework.Randomizer;
 
 namespace Eps.Service.Demo.Monitoring.API
@@ -15,6 +16,8 @@ namespace Eps.Service.Demo.Monitoring.API
         public Command()
         {
             UniqueId = UniqueIdRandomizer.Next();
+            PropertyToExcludeFromLogging = "SomeString";
+            PropertyWithCustomLoggingName = "AnotherString";
         }
 
         public Command(string identification)
@@ -33,5 +36,11 @@ namespace Eps.Service.Demo.Monitoring.API
         public int UniqueId { get; set; }
 
         public string Identification { get; set; }
+
+        [NotLogged]
+        public string PropertyToExcludeFromLogging { get; set; }
+
+        [LogWithName("CustomLoggingName")]
+        public string PropertyWithCustomLoggingName { get; set; }
     }
 }

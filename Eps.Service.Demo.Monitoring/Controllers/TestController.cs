@@ -47,6 +47,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             try
             {
                 LogCommand(nameof(Execute), command);
+
                 if (command == null)
                 {
                     string errorText = "Command is not supported";
