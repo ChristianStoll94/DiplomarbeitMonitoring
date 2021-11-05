@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Elastic.Apm;
 
-namespace Eps.Service.Demo.Monitoring
+namespace Eps.Service.Demo.Monitoring.Workflows
 {
     public class Workflow
     {
@@ -12,7 +9,7 @@ namespace Eps.Service.Demo.Monitoring
         {
             await Agent.Tracer.CurrentTransaction.CaptureSpan("SomeWork", "Task", async (span) =>
             {
-                span.SetLabel("Testlabel", "Label1");
+                span.SetLabel("TestLabel", "Label1");
                 
                 await StepOne();
                 await StepTwo();

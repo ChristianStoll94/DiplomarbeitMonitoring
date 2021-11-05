@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Elastic.Apm;
+using Eps.Service.Demo.Monitoring.Workflows;
 using Microsoft.Extensions.Hosting;
 
 namespace Eps.Service.Demo.Monitoring.Services
 {
     public class HostedService : BackgroundService
     {
-        static ActivitySource s_source = new ActivitySource(typeof(HostedService).FullName);
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             //ToDo: Do better
@@ -18,7 +16,7 @@ namespace Eps.Service.Demo.Monitoring.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Agent.Tracer.CaptureTransaction("TestService", "HostedService", async (transaction) =>
+                await Agent.Tracer.CaptureTransaction("Execute DoSomeWork", "HostedService", async (transaction) =>
                 {
                     transaction.SetLabel("Testlabel", "Label1");
 

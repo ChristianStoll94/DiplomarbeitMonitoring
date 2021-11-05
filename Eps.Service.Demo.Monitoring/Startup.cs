@@ -1,23 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Eps.Framework.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Eps.Service.Extensions.Logging;
 using Eps.Service.Extensions.Monitoring;
 using Eps.Service.Extensions.Swagger;
-using Eps.Service.Extensions.Validation;
 using Microsoft.Extensions.Logging;
 using App.Metrics;
 using App.Metrics.Formatters.Prometheus;
-using Elastic.Apm.NetCoreAll;
-using Elastic.CommonSchema.Serilog;
+using Eps.Service.Demo.Monitoring.HealthChecks;
 using Eps.Service.Demo.Monitoring.Services;
 using Eps.Service.Extensions.Health;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace Eps.Service.Demo.Monitoring
 {
@@ -42,33 +42,43 @@ namespace Eps.Service.Demo.Monitoring
             services.AddLogging(Configuration);
 
             services.AddControllers();
+            
+            services.AddOpenTelemetryTracing(builder => builder
+                .AddSource("Eps.Service.Demo.Monitoring.Services.HostedServiceOpenTelemetry", "Eps.Service.Demo.Monitoring.WorkflowOpenTelemetry", "Eps.Service.Demo.Monitoring.SyncWorkflowOpenTelemetry")
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Eps.Service.Demo.Monitoring"))
+                .AddAspNetCoreInstrumentation(o => o.RecordException = true)
+                .AddElasticsearchClientInstrumentation()
+                .AddOtlpExporter(o =>
+                {
+                    o.Endpoint = new Uri("http://localhost:8200");
+                    o.Headers = "Authorization=ApiKey LU9MejZYd0J6V3JpeTdyWnFjQXg6RVVyWm8weE9UVmlNR0dkaUEzeDBndw==";
+                }));
 
-            //fluent validation
-            services.AddValidation();
-            //services.AddTransient<IValidator<TestCommand>, TestCommandValidator>();
+            //services.AddHostedService<HostedServiceOpenTelemetry>();
 
-            //Metrics registration
+            //Metrics config
             var metrics = AppMetrics.CreateDefaultBuilder()
                 .Configuration.Configure(options =>
                 {
                     options.Enabled = true;
-                    options.ReportingEnabled = true;
                 })
-                //.Report.ToTextFile(@"C:\Projects\metrics.txt", TimeSpan.FromSeconds(4))
-                //.OutputMetrics.AsPrometheusPlainText()
+                .OutputMetrics.AsPrometheusPlainText()
                 .OutputMetrics.AsPrometheusProtobuf()
                 .Build();
+            
+            //Metrics registration
             services.AddMetrics(metrics);
-            services.AddMetricsReportingHostedService();
             services.AddAppMetricsHealthPublishing();
-            //services.AddMetricsEndpoints(options =>
-            //    options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
-            //        .OfType<MetricsPrometheusTextOutputFormatter>().First());
+            services.AddMetricsEndpoints(options =>
+                options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
+                    .OfType<MetricsPrometheusTextOutputFormatter>().First());
             services.AddMetricsEndpoints(options =>
                 options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters
                     .OfType<MetricsPrometheusProtobufOutputFormatter>().First());
 
-            services.AddHealth(Configuration);
+            //Healthy registration
+            services.AddHealth(Configuration)
+                .AddCheck<SimpleHealthCheck>($"{nameof(SimpleHealthCheck)}");
 
             services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
 
@@ -84,6 +94,8 @@ namespace Eps.Service.Demo.Monitoring
 
                 app.UseMonitoring(Configuration);
 
+                app.UseMetricsAllEndpoints();
+
                 if (env.IsDevelopment())
                 {
                     app.UseDeveloperExceptionPage();
@@ -91,8 +103,6 @@ namespace Eps.Service.Demo.Monitoring
                 
                 app.UseRouting();
                 app.UseAuthorization();
-
-                app.UseMetricsAllEndpoints();
 
                 app.UseEndpoints(endpoints =>
                 {

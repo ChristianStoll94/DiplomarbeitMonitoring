@@ -1,5 +1,4 @@
 ﻿using System;
-using App.Metrics;
 using Eps.Framework.Reflection;
 using Eps.Service.Demo.Monitoring.API;
 using Microsoft.AspNetCore.Mvc;
@@ -32,15 +31,14 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             DateTime beginExecutionTime = DateTime.UtcNow;
 
             int uniqueId = ((command == null) ? -1 : command.UniqueId);
-            using (_logger.BeginScope("UniqueId", uniqueId))
-            {
+            
                 try
                 {
                     LogCommand(nameof(Execute), command);
                     if (command == null)
                     {
                         string errorText = "Command is not supported";
-                        _logger.LogError(nameof(Execute) + "; " + errorText);
+                        _logger.LogError("{MethodName} ; {@Data}", nameof(Execute), new { ErrorText = errorText });
                         response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnknownCommand, errorText);
                     }
                     else
@@ -50,9 +48,8 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 }
                 catch (Exception ex)
                 {
-                    string errorText = "Unexpected Exception; Message; " + ex.Message;
-                    _logger.LogError(ex, "{methodName} ; {errorText}", nameof(Execute), errorText);
-                    response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnexpectedException, errorText);
+                    _logger.LogError(ex, "{methodName} ; {ErrorType} ; {ErrorText}", nameof(Execute), "Unexpected Exception", ex.Message);
+                    response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnexpectedException, ex.Message);
                 }
                 finally
                 {
@@ -61,7 +58,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 }
 
                 return response;
-            }
         }
 
         private WelcomeResponse ExecuteCommand(WelcomeCommand command)
@@ -76,7 +72,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         private WelcomeResponse ValidateParameters(WelcomeCommand command)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug(nameof(ValidateParameters) + "; Command; " + command.ToString());
+                _logger.LogDebug("{MethodName}; Command; {@Data}", nameof(ValidateParameters), new { Command = command });
 
             return new WelcomeResponse(command.UniqueId, WelcomeResponse.WelcomeErrorCodes.NoError, string.Empty);
         }

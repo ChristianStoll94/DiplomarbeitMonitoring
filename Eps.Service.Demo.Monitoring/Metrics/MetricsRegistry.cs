@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using App.Metrics;
+﻿using App.Metrics;
 using App.Metrics.Counter;
 
-namespace Eps.Service.Demo.Monitoring
+namespace Eps.Service.Demo.Monitoring.Metrics
 {
     public class MetricsRegistry
     {

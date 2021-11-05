@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using App.Metrics;
 using Elastic.Apm;
 using Eps.Framework.Exceptions;
 using Eps.Service.Demo.Monitoring.API;
-using FluentValidation.Validators;
+using Eps.Service.Demo.Monitoring.Metrics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +31,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 ThrowHandledException = throwHandledException,
                 ThrowUnhandledException = throwUnhandledException,
                 IncrementCounter = incrementCounter,
-                Teststring = testString
+                ExampleParameter = testString
             });
         }
 
@@ -51,7 +50,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 if (command == null)
                 {
                     string errorText = "Command is not supported";
-                    _logger.LogError(nameof(Execute) + "; " + errorText);
+                    _logger.LogError("{MethodName} ; {@Data}", nameof(Execute), new {ErrorText = errorText});
                     response = new TestResponse(uniqueId, TestResponse.TestErrorCodes.UnknownCommand, errorText);
                 }
                 else
@@ -70,8 +69,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 LogResponse(nameof(Execute), response, beginExecutionTime, endExecutionTime);
             }
 
-
-            ValidateLog(nameof(Execute), command, response);
+            //ValidateLog(nameof(Execute), command, response);
             return response;
         }
 
@@ -93,16 +91,14 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     throw new ExecutionException("Some Exception message");
                 }
 
-                
                 var randomNumber = GetRandomNumber();
-                Agent.Tracer.CurrentTransaction.SetLabel("randomNumber", randomNumber);
+                Agent.Tracer.CurrentTransaction.SetLabel("RandomNumber", randomNumber);
 
                 return response;
             }
             catch (ExecutionException ex)
             {
-                string errorText = "Unexpected Exception; Message; " + ex.Message;
-                _logger.LogError(ex, "{methodName} ; {errorText}", nameof(Execute), errorText);
+                _logger.LogError(ex, "{MethodName}; Data; {@Data}", nameof(Execute), new {Command = command, Message = "Unexpected Exception"});
                 response = new TestResponse(command.UniqueId, TestResponse.TestErrorCodes.ExecutionError, ex.Content.ToMessage());
             }
 
@@ -116,7 +112,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             {
                 Thread.Sleep(1500);
                 span.SetLabel("TestLabel", "I'm a Span");
-                span.SetLabel("TestLabel2", "I'm a Span");
                 return random.Next();
             });
         }
@@ -124,14 +119,14 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         private TestResponse ValidateParameters(TestCommand command)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug("{ValidateParameters}; Command; {command}", nameof(ValidateParameters), command);
+                _logger.LogDebug("{MethodName}; Command; {@Data}", nameof(ValidateParameters), new {Command = command});
 
             if (!command.Valid)
             {
-                string errorText = "Invalid Teststring";
-                string data = (command.Teststring ?? "NULL");
-                _logger.LogWarning("{ValidateParameters} ; {errorText} ; Data; {data}", nameof(ValidateParameters) , errorText, data);
-                return new TestResponse(command.UniqueId, TestResponse.TestErrorCodes.InvalidParameter, errorText + " Data; " + data);
+                string errorText = "Invalid Parameter";
+                string invalidParameter = (command.ExampleParameter ?? "NULL");
+                _logger.LogWarning("{MethodName}; Data; {@Data}", nameof(ValidateParameters) , new {Message = errorText, Command = command, InvalidParameter = invalidParameter });
+                return new TestResponse(command.UniqueId, TestResponse.TestErrorCodes.InvalidParameter, errorText + " Data; " + invalidParameter);
             }
 
             return new TestResponse(command.UniqueId, TestResponse.TestErrorCodes.NoError, string.Empty);

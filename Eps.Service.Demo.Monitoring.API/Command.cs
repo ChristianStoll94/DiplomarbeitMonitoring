@@ -17,7 +17,7 @@ namespace Eps.Service.Demo.Monitoring.API
         {
             UniqueId = UniqueIdRandomizer.Next();
             PropertyToExcludeFromLogging = "SomeString";
-            PropertyWithCustomLoggingName = "AnotherString";
+            PropertyWithCustomLoggingName = "TestString";
         }
 
         public Command(string identification)
@@ -40,7 +40,7 @@ namespace Eps.Service.Demo.Monitoring.API
         [NotLogged]
         public string PropertyToExcludeFromLogging { get; set; }
 
-        [LogWithName("CustomLoggingName")]
+        [LogWithName("ExampleName")]
         public string PropertyWithCustomLoggingName { get; set; }
     }
 }

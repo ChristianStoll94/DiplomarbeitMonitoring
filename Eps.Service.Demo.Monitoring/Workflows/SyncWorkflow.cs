@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using Elastic.Apm;
 
-namespace Eps.Service.Demo.Monitoring
+namespace Eps.Service.Demo.Monitoring.Workflows
 {
     public class SyncWorkflow
     {
