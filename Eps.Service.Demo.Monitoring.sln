@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31613.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eps.Service.Demo.Monitoring", "Eps.Service.Demo.Monitoring\Eps.Service.Demo.Monitoring.csproj", "{E54A4FB8-4D50-4483-AD62-75E12FCED5E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eps.Service.Demo.Monitoring", "Eps.Service.Demo.Monitoring\Eps.Service.Demo.Monitoring.csproj", "{E54A4FB8-4D50-4483-AD62-75E12FCED5E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eps.Service.Demo.Monitoring.API", "Eps.Service.Demo.Monitoring.API\Eps.Service.Demo.Monitoring.API.csproj", "{144F9612-4595-4F22-AF51-DE9C6FA25188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eps.Service.Demo.Monitoring.API", "Eps.Service.Demo.Monitoring.API\Eps.Service.Demo.Monitoring.API.csproj", "{144F9612-4595-4F22-AF51-DE9C6FA25188}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eps.Service.Demo.Monitoring.MicroService", "Eps.Service.Demo.Monitoring.MicroService\Eps.Service.Demo.Monitoring.MicroService.csproj", "{423715A1-91F2-466E-8049-2E119113D301}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{144F9612-4595-4F22-AF51-DE9C6FA25188}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{144F9612-4595-4F22-AF51-DE9C6FA25188}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{144F9612-4595-4F22-AF51-DE9C6FA25188}.Release|Any CPU.Build.0 = Release|Any CPU
+		{423715A1-91F2-466E-8049-2E119113D301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{423715A1-91F2-466E-8049-2E119113D301}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{423715A1-91F2-466E-8049-2E119113D301}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{423715A1-91F2-466E-8049-2E119113D301}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

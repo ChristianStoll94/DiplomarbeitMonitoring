@@ -1,20 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Eps.Service.Demo.Monitoring.Workflows
+namespace Eps.Service.Demo.Monitoring.Workflows.Lib
 {
-    public static class WorkflowOpenTelemetry
+    public class Workflow
     {
-        static WorkflowOpenTelemetry()
-        {
-            var a = 0;
-        }
-
-        static ActivitySource s_source = new ActivitySource(typeof(WorkflowOpenTelemetry).FullName);
+        static ActivitySource s_source = new ActivitySource(typeof(Workflow).FullName);
 
         public static async Task DoSomeWork()
         {
-            using (var activity = s_source.StartActivity("DoSomeWork"))
+            using (var activity = s_source.StartActivity("SomeWork"))
             {
                 //set additional tags
                 activity.AddTag("MyTagId", "ValueInTags");

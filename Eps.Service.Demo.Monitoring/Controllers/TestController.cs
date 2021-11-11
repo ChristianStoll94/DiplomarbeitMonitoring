@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using App.Metrics;
 using Elastic.Apm;
 using Eps.Framework.Exceptions;
@@ -34,9 +36,9 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 ExampleParameter = testString
             });
         }
-
-        [HttpPost]
-        public TestResponse Execute([FromBody] TestCommand command)
+        
+        
+        private TestResponse Execute(TestCommand command)
         {
             TestResponse response = null;
             DateTime beginExecutionTime = DateTime.UtcNow;
@@ -68,8 +70,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 DateTime endExecutionTime = DateTime.UtcNow;
                 LogResponse(nameof(Execute), response, beginExecutionTime, endExecutionTime);
             }
-
-            //ValidateLog(nameof(Execute), command, response);
+            
             return response;
         }
 
@@ -88,7 +89,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
 
                 if (command.ThrowHandledException)
                 {
-                    throw new ExecutionException("Some Exception message");
+                    throw new ExecutionException("ExecutionException");
                 }
 
                 var randomNumber = GetRandomNumber();

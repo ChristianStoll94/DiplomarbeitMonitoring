@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Eps.Framework.Reflection;
@@ -15,6 +14,7 @@ using App.Metrics;
 using App.Metrics.Formatters.Prometheus;
 using Eps.Service.Demo.Monitoring.HealthChecks;
 using Eps.Service.Demo.Monitoring.Services;
+using Eps.Service.Demo.Monitoring.Workflows;
 using Eps.Service.Extensions.Health;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -42,19 +42,20 @@ namespace Eps.Service.Demo.Monitoring
             services.AddLogging(Configuration);
 
             services.AddControllers();
+
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport",
+                true);
             
             services.AddOpenTelemetryTracing(builder => builder
-                .AddSource("Eps.Service.Demo.Monitoring.Services.HostedServiceOpenTelemetry", "Eps.Service.Demo.Monitoring.WorkflowOpenTelemetry", "Eps.Service.Demo.Monitoring.SyncWorkflowOpenTelemetry")
-                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Eps.Service.Demo.Monitoring"))
-                .AddAspNetCoreInstrumentation(o => o.RecordException = true)
+                .AddSource(typeof(WorkflowOpenTelemetry).FullName, typeof(SyncWorkflowOpenTelemetry).FullName, typeof(HostedServiceOpenTelemetry).FullName)
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Assembly.GetExecutingAssembly().GetName().Name))
+                .AddAspNetCoreInstrumentation()
                 .AddElasticsearchClientInstrumentation()
                 .AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri("http://localhost:8200");
                     o.Headers = "Authorization=ApiKey LU9MejZYd0J6V3JpeTdyWnFjQXg6RVVyWm8weE9UVmlNR0dkaUEzeDBndw==";
                 }));
-
-            //services.AddHostedService<HostedServiceOpenTelemetry>();
 
             //Metrics config
             var metrics = AppMetrics.CreateDefaultBuilder()
@@ -81,6 +82,8 @@ namespace Eps.Service.Demo.Monitoring
                 .AddCheck<SimpleHealthCheck>($"{nameof(SimpleHealthCheck)}");
 
             services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
+
+            services.AddHostedService<HostedServiceOpenTelemetry>();
 
         }
 

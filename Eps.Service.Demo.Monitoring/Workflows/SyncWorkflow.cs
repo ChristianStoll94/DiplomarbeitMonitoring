@@ -5,7 +5,7 @@ namespace Eps.Service.Demo.Monitoring.Workflows
 {
     public class SyncWorkflow
     {
-       
+
         public static void Task1()
         {
             Agent.Tracer.CurrentTransaction.CaptureSpan("Task1", "Task", (span) =>

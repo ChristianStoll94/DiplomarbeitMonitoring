@@ -10,7 +10,7 @@ namespace Eps.Service.Demo.Monitoring.Workflows
             await Agent.Tracer.CurrentTransaction.CaptureSpan("SomeWork", "Task", async (span) =>
             {
                 span.SetLabel("TestLabel", "Label1");
-                
+
                 await StepOne();
                 await StepTwo();
             });

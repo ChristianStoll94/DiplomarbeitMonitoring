@@ -5,7 +5,7 @@ namespace Eps.Service.Demo.Monitoring.Workflows
 {
     public class SyncWorkflowOpenTelemetry
     {
-        static ActivitySource s_source = new ActivitySource(typeof(SyncWorkflow).FullName);
+        static ActivitySource s_source = new ActivitySource(typeof(SyncWorkflowOpenTelemetry).FullName);
 
         public static void Task1()
         {
