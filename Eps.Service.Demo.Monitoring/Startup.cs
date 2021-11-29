@@ -1,21 +1,26 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using App.Metrics;
+using App.Metrics.Formatters.Prometheus;
+using Elastic.Apm.NetCoreAll;
 using Eps.Framework.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Eps.Service.Extensions.Logging;
-using Eps.Service.Extensions.Monitoring;
+using Eps.Service.Extensions.Monitoring.OpenTelemetry;
 using Eps.Service.Extensions.Swagger;
 using Microsoft.Extensions.Logging;
-using App.Metrics;
-using App.Metrics.Formatters.Prometheus;
 using Eps.Service.Demo.Monitoring.HealthChecks;
-using Eps.Service.Demo.Monitoring.Services;
-using Eps.Service.Demo.Monitoring.Workflows;
+using Eps.Service.Demo.Monitoring.Services.ElasticAPM;
+using Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM;
 using Eps.Service.Extensions.Health;
+using Eps.Service.Extensions.Monitoring;
+using Microsoft.AspNetCore.Http;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -33,8 +38,6 @@ namespace Eps.Service.Demo.Monitoring
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHostedService<HostedService>();
-
             services.Configure<ApplicationSettings>(Configuration.GetSection("ApplicationSettings"));
 
             services.AddSingleton(new AssemblyReader(Assembly.GetExecutingAssembly()));
@@ -45,46 +48,19 @@ namespace Eps.Service.Demo.Monitoring
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport",
                 true);
-            
-            services.AddOpenTelemetryTracing(builder => builder
-                .AddSource(typeof(WorkflowOpenTelemetry).FullName, typeof(SyncWorkflowOpenTelemetry).FullName, typeof(HostedServiceOpenTelemetry).FullName)
-                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Assembly.GetExecutingAssembly().GetName().Name))
-                .AddAspNetCoreInstrumentation()
-                .AddElasticsearchClientInstrumentation()
-                .AddOtlpExporter(o =>
-                {
-                    o.Endpoint = new Uri("http://localhost:8200");
-                    o.Headers = "Authorization=ApiKey LU9MejZYd0J6V3JpeTdyWnFjQXg6RVVyWm8weE9UVmlNR0dkaUEzeDBndw==";
-                }));
 
-            //Metrics config
-            var metrics = AppMetrics.CreateDefaultBuilder()
-                .Configuration.Configure(options =>
-                {
-                    options.Enabled = true;
-                })
-                .OutputMetrics.AsPrometheusPlainText()
-                .OutputMetrics.AsPrometheusProtobuf()
-                .Build();
-            
-            //Metrics registration
-            services.AddMetrics(metrics);
-            services.AddAppMetricsHealthPublishing();
-            services.AddMetricsEndpoints(options =>
-                options.MetricsTextEndpointOutputFormatter = metrics.OutputMetricsFormatters
-                    .OfType<MetricsPrometheusTextOutputFormatter>().First());
-            services.AddMetricsEndpoints(options =>
-                options.MetricsEndpointOutputFormatter = metrics.OutputMetricsFormatters
-                    .OfType<MetricsPrometheusProtobufOutputFormatter>().First());
+            services.AddOpenTelemetryMonitoring(Configuration);
+
+            services.AddMetrics(Configuration);
 
             //Healthy registration
             services.AddHealth(Configuration)
                 .AddCheck<SimpleHealthCheck>($"{nameof(SimpleHealthCheck)}");
 
-            services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
-
+            services.AddHostedService<HostedService>();
             services.AddHostedService<HostedServiceOpenTelemetry>();
 
+            services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,9 +69,9 @@ namespace Eps.Service.Demo.Monitoring
             try
             {
                 app.LogStartup(logger, assemblyReader);
-                app.UseLogging(loggerFactory);
 
-                app.UseMonitoring(Configuration);
+                app.UseLogging(loggerFactory);
+                app.UseOpenTelemetryLoggingMiddleware();
 
                 app.UseMetricsAllEndpoints();
 
@@ -103,7 +79,7 @@ namespace Eps.Service.Demo.Monitoring
                 {
                     app.UseDeveloperExceptionPage();
                 }
-                
+
                 app.UseRouting();
                 app.UseAuthorization();
 

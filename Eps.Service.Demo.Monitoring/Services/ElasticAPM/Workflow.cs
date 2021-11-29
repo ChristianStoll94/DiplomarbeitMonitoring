@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Elastic.Apm;
 
-namespace Eps.Service.Demo.Monitoring.Workflows
+namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
 {
     public class Workflow
     {
-        public static async Task DoSomeWork()
+        public static async Task RunAsyncTasks()
         {
-            await Agent.Tracer.CurrentTransaction.CaptureSpan("SomeWork", "Task", async (span) =>
+            await Agent.Tracer.CurrentTransaction.CaptureSpan("AsyncTasks", "Task", async (span) =>
             {
-                span.SetLabel("TestLabel", "Label1");
-
+                span.SetLabel("MyLabel", "SomeLabel");
+                
                 await StepOne();
                 await StepTwo();
             });
@@ -26,7 +26,6 @@ namespace Eps.Service.Demo.Monitoring.Workflows
 
         public static async Task StepTwo()
         {
-
             await Agent.Tracer.CurrentTransaction.CaptureSpan("StepTwo", "Task", async (span) =>
             {
                 await Task.Delay(3000);

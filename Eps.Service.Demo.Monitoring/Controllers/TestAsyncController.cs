@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Elastic.Apm.Api;
-using Elastic.CommonSchema;
 using Eps.Framework.Reflection;
 using Eps.Service.Demo.Monitoring.API;
-using Eps.Service.Demo.Monitoring.Workflows;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +13,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
     public class TestAsyncController : BaseController
     {
         private readonly AssemblyReader _assemblyHelper;
-        static readonly HttpClient client = new HttpClient();
+        static readonly HttpClient Client = new HttpClient();
 
         public TestAsyncController(ILogger<WelcomeController> logger)
             : base(logger)
@@ -73,7 +68,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             if (response.ErrorCode != TestAsyncResponse.TestAsyncErrorCodes.NoError)
                 return response;
 
-            HttpResponseMessage response2 = await client.GetAsync("http://localhost:48060/WeatherForecast");
+            HttpResponseMessage response2 = await Client.GetAsync("http://localhost:48060/WeatherForecast");
             response2.EnsureSuccessStatusCode();
             string responseBody = await response2.Content.ReadAsStringAsync();
                 // Above three lines can be replaced with new helper method below

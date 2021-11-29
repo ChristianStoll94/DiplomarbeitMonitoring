@@ -5,10 +5,8 @@
     <Version>1.2.0</Version>
   </PropertyGroup>
 
-	<ItemGroup>
-		
-		<PackageReference Include="Eps.Service.Extensions.Monitoring" Version="0.2.0" />
-		
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Eps.Service.Extensions.Monitoring.OpenTelemetry" Version="0.4.2" />
+  </ItemGroup>
 
 </Project>

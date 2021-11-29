@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 using App.Metrics;
 using Elastic.Apm;
 using Eps.Framework.Exceptions;
@@ -52,7 +54,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 if (command == null)
                 {
                     string errorText = "Command is not supported";
-                    _logger.LogError("{MethodName} ; {@Data}", nameof(Execute), new {ErrorText = errorText});
+                    _logger.LogError("{MethodName}; {@Data}", nameof(Execute), new {ErrorText = errorText});
                     response = new TestResponse(uniqueId, TestResponse.TestErrorCodes.UnknownCommand, errorText);
                 }
                 else
@@ -80,6 +82,9 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             if (response.ErrorCode != TestResponse.TestErrorCodes.NoError)
                 return response;
 
+            var a = Activity.Current?.TraceId;
+            var b = Activity.Current?.SpanId;
+
             try
             {
                 if (command.IncrementCounter)
@@ -92,19 +97,20 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     throw new ExecutionException("ExecutionException");
                 }
 
-                var randomNumber = GetRandomNumber();
-                Agent.Tracer.CurrentTransaction.SetLabel("RandomNumber", randomNumber);
+                //var randomNumber = GetRandomNumber();
+                //Agent.Tracer.CurrentTransaction.SetLabel("RandomNumber", randomNumber);
 
                 return response;
             }
             catch (ExecutionException ex)
             {
-                _logger.LogError(ex, "{MethodName}; Data; {@Data}", nameof(Execute), new {Command = command, Message = "Unexpected Exception"});
+                _logger.LogError(ex, "{MethodName}; Data; {@Data}", nameof(Execute), new {Command = command, ErrorText = ex.Message});
                 response = new TestResponse(command.UniqueId, TestResponse.TestErrorCodes.ExecutionError, ex.Content.ToMessage());
             }
 
             return response;
         }
+        
 
         private int GetRandomNumber()
         {

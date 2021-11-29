@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <Version>1.3.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,14 +15,8 @@
     <PackageReference Include="Eps.Framework.Exceptions" Version="0.1.5" />
     <PackageReference Include="Eps.Service.Extensions.Health" Version="0.2.0" />
     <PackageReference Include="Eps.Service.Extensions.Logging" Version="0.9.1" />
-    <PackageReference Include="Eps.Service.Extensions.Monitoring" Version="0.2.0" />
+    <PackageReference Include="Eps.Service.Extensions.Monitoring.OpenTelemetry" Version="0.4.2" />
     <PackageReference Include="Eps.Service.Extensions.Swagger" Version="3.6.0" />
-    <PackageReference Include="OpenTelemetry" Version="1.2.0-beta1" />
-    <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient" Version="1.0.0-beta2" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.1.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
     <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
   </ItemGroup>

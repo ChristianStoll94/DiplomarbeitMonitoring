@@ -23,9 +23,6 @@ namespace Eps.Service.Demo.Monitoring.HealthChecks
             {
                 return Task.FromResult(HealthCheckResult.Healthy("A healthy result."));
             }
-
-            //return unhealthy as default or overwritten state on startup registration
-            return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, "An unhealthy result."));
         }
     }
 }

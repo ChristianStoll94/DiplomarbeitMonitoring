@@ -38,7 +38,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     if (command == null)
                     {
                         string errorText = "Command is not supported";
-                        _logger.LogError("{MethodName} ; {@Data}", nameof(Execute), new { ErrorText = errorText });
+                        _logger.LogError("{MethodName}; {@Data}", nameof(Execute), new { ErrorText = errorText });
                         response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnknownCommand, errorText);
                     }
                     else
@@ -48,7 +48,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "{methodName} ; {ErrorType} ; {ErrorText}", nameof(Execute), "Unexpected Exception", ex.Message);
+                    _logger.LogError(ex, "{methodName}; {ErrorType}; {ErrorText}", nameof(Execute), "Unexpected Exception", ex.Message);
                     response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnexpectedException, ex.Message);
                 }
                 finally
