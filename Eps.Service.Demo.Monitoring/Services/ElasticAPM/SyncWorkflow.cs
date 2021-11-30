@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Elastic.Apm;
+using Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM;
 
 namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
 {
@@ -29,6 +31,9 @@ namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
             Agent.Tracer.CurrentTransaction.CaptureSpan("Task2", "Task", (span) =>
             {
                 Thread.Sleep(3000);
+                if (StaticTestProperties.ThrowException)
+                    throw new Exception("TestException");
+
             });
         }
     }

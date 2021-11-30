@@ -1,20 +1,26 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Eps.Service.Extensions.Monitoring;
 using Eps.Service.Extensions.Monitoring.OpenTelemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Trace;
 
 namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
 {
     public class HostedServiceOpenTelemetry : BackgroundService
     {
         protected readonly ILogger _logger;
+        private readonly IMonitoringProvider _monitoringProvider;
 
-        public HostedServiceOpenTelemetry(ILogger<HostedServiceOpenTelemetry> logger)
+        public HostedServiceOpenTelemetry(ILogger<HostedServiceOpenTelemetry> logger, IMonitoringProvider monitoringProvider)
         {
             _logger = logger;
+            _monitoringProvider = monitoringProvider;
+
         }
 
         static readonly ActivitySource ActivitySource = new ActivitySource(Assembly.GetExecutingAssembly().GetName().Name);
@@ -26,9 +32,11 @@ namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
             {
                 using (var activity = ActivitySource.StartActivity(this.GetType().Name))
                 {
-                    using (_logger.BeginElasticLogging())
+                    try
                     {
-                        _logger.LogInformation("{MethodName}; {@Data}; {APMSource}", nameof(ExecuteAsync),
+                        using (_logger.BeginElasticLogging())
+                        {
+                            _logger.LogInformation("{MethodName}; {@Data}; {APMSource}", nameof(ExecuteAsync),
                                 new {Test = "test"}, "OpenTelemetry");
 
                             activity.AddTag("MyTag", "SomeTag");
@@ -36,6 +44,11 @@ namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
                             SyncWorkflowOpenTelemetry.RunSyncTasks();
 
                             await WorkflowOpenTelemetry.RunAsyncTasks();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Activity.Current?.RecordException(ex);
                     }
                 }
             }

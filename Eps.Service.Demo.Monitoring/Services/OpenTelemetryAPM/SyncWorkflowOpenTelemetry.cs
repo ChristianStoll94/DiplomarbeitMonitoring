@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
@@ -32,6 +33,9 @@ namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
             using (var activity = ActivitySource.StartActivity("Task2"))
             {
                 Thread.Sleep(2000);
+
+                if (StaticTestProperties.ThrowException)
+                    throw new Exception("TestException");
             }
         }
     }

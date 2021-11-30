@@ -33,7 +33,7 @@ namespace Eps.Service.Demo.Monitoring.MicroService.Controllers
         {
             var rng = new Random();
 
-            //var number = GetRandomNumber();
+            var number = GetRandomNumber();
             var number2 = GetRandomNumber2();
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

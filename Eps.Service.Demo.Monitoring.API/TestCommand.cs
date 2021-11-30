@@ -9,6 +9,7 @@ namespace Eps.Service.Demo.Monitoring.API
         public bool Valid { get; set; }
         public bool ThrowHandledException { get; set; }
         public bool ThrowUnhandledException { get; set; }
+        public bool ThrowMiddleWareException { get; set; }
         public bool IncrementCounter { get; set; }
         public string ExampleParameter { get; set; }
     }

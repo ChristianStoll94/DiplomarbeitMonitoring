@@ -73,6 +73,8 @@ namespace Eps.Service.Demo.Monitoring
                 app.UseLogging(loggerFactory);
                 app.UseOpenTelemetryLoggingMiddleware();
 
+                app.UseMonitoring(Configuration);
+
                 app.UseMetricsAllEndpoints();
 
                 if (env.IsDevelopment())

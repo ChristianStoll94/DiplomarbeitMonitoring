@@ -9,6 +9,8 @@ using Elastic.Apm;
 using Eps.Framework.Exceptions;
 using Eps.Service.Demo.Monitoring.API;
 using Eps.Service.Demo.Monitoring.Metrics;
+using Eps.Service.Demo.Monitoring.Services;
+using Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -27,12 +29,13 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         }
 
         [HttpPut]
-        public TestResponse Create(bool valid, bool throwHandledException, bool throwUnhandledException, bool incrementCounter, string testString)
+        public TestResponse Create(bool valid, bool throwHandledException, bool throwMiddleWAreException, bool throwUnhandledException, bool incrementCounter, string testString)
         {
             return Execute(new TestCommand()
             {
                 Valid = valid,
                 ThrowHandledException = throwHandledException,
+                ThrowMiddleWareException = throwMiddleWAreException,
                 ThrowUnhandledException = throwUnhandledException,
                 IncrementCounter = incrementCounter,
                 ExampleParameter = testString
@@ -82,9 +85,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             if (response.ErrorCode != TestResponse.TestErrorCodes.NoError)
                 return response;
 
-            var a = Activity.Current?.TraceId;
-            var b = Activity.Current?.SpanId;
-
             try
             {
                 if (command.IncrementCounter)
@@ -97,9 +97,8 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     throw new ExecutionException("ExecutionException");
                 }
 
-                //var randomNumber = GetRandomNumber();
-                //Agent.Tracer.CurrentTransaction.SetLabel("RandomNumber", randomNumber);
-
+                StaticTestProperties.ThrowException = command.ThrowMiddleWareException;
+                
                 return response;
             }
             catch (ExecutionException ex)
@@ -109,18 +108,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             }
 
             return response;
-        }
-        
-
-        private int GetRandomNumber()
-        {
-            var random = new Random();
-            return Agent.Tracer.CurrentTransaction.CaptureSpan("TestSpan", "RandomGeneration", (span) =>
-            {
-                Thread.Sleep(1500);
-                span.SetLabel("TestLabel", "I'm a Span");
-                return random.Next();
-            });
         }
 
         private TestResponse ValidateParameters(TestCommand command)
