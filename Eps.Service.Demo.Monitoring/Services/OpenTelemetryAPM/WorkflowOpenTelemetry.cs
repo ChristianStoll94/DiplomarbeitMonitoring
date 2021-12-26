@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
 {
+
     public static class WorkflowOpenTelemetry
     {
         static readonly ActivitySource ActivitySource = new ActivitySource(Assembly.GetExecutingAssembly().GetName().Name);
@@ -14,8 +15,7 @@ namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
             {
                 activity.AddTag("MyTag", "SomeTag");
 
-                await StepOne();
-                await StepTwo();
+                await Task.Delay(5000);
             }
         }
 

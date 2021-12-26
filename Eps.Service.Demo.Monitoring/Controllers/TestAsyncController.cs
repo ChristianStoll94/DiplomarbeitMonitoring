@@ -30,7 +30,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         public async Task<TestAsyncResponse> Execute([FromBody] TestAsyncCommand command)
         {
             TestAsyncResponse response = null;
-            DateTime beginExecutionTime = DateTime.UtcNow;
 
             int uniqueId = ((command == null) ? -1 : command.UniqueId);
 
@@ -40,7 +39,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 if (command == null)
                 {
                     string errorText = "Command is not supported";
-                    _logger.LogError("{MethodName} ; {@Data}", nameof(Execute), new { ErrorText = errorText });
+                    _logger.LogError("{MethodName}; Data; {@Data}", nameof(Execute), new { ErrorText = errorText });
                     response = new TestAsyncResponse(uniqueId, TestAsyncResponse.TestAsyncErrorCodes.UnknownCommand, errorText);
                 }
                 else
@@ -50,13 +49,13 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{methodName} ; {ErrorType} ; {ErrorText}", nameof(Execute), "Unexpected Exception", ex.Message);
+                _logger.LogError(ex, "{MethodName} ; {@Data}", nameof(Execute), new { ErrorText = "Unexpected Exception" });
+
                 response = new TestAsyncResponse(uniqueId, TestAsyncResponse.TestAsyncErrorCodes.UnexpectedException, ex.Message);
             }
             finally
             {
-                DateTime endExecutionTime = DateTime.UtcNow;
-                LogResponse(nameof(Execute), response, beginExecutionTime, endExecutionTime);
+                LogResponse(nameof(Execute), response);
             }
 
             return response;
@@ -68,21 +67,21 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             if (response.ErrorCode != TestAsyncResponse.TestAsyncErrorCodes.NoError)
                 return response;
 
-            HttpResponseMessage response2 = await Client.GetAsync("http://localhost:48060/WeatherForecast");
-            response2.EnsureSuccessStatusCode();
-            string responseBody = await response2.Content.ReadAsStringAsync();
-                // Above three lines can be replaced with new helper method below
-                // string responseBody = await client.GetStringAsync(uri);
+            HttpResponseMessage httpResponseMessage = await Client.GetAsync("http://localhost:48060/WeatherForecast");
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            string responseString = await httpResponseMessage.Content.ReadAsStringAsync();
+
             return new TestAsyncResponse(command.UniqueId, TestAsyncResponse.TestAsyncErrorCodes.NoError, string.Empty)
             {
-                XXX = responseBody
+                ResponseString = responseString
             };
         }
 
         private async Task<TestAsyncResponse> ValidateParameters(TestAsyncCommand command)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug("{MethodName}; Command; {@Data}", nameof(ValidateParameters), new { Command = command });
+                _logger.LogDebug("{MethodName}; Data; {@Data}", nameof(ValidateParameters), new { Command = command });
 
 
 

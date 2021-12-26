@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Eps.Service.Demo.Monitoring
 {
-    public static class MetricsExtensions
+    public static class MetricExtensions
     {
         private const string MetricsSettings = "Metrics";
 

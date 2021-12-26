@@ -15,23 +15,28 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             _logger = logger;
         }
 
+        
+
         protected void LogCommand(string methodName, Command command)
         {
-            
-                _logger.LogInformation("{MethodName}; Data; {@Data}", methodName, new {Command = command});
+            _logger.LogInformation("{MethodName}; Data; {@Data}", methodName, new {Command = command});
         }
 
-        protected void LogResponse(string methodName, Response response, DateTime beginExecutionTime, DateTime endExecutionTime)
+        protected void LogResponse(string methodName, Response response)
         {
-            _logger.LogInformation("{MethodName}; Data; {@Data}; Diagnostics {@Diagnostics}", methodName,
-                    new {Response = response},
-                    new {ExecutionTime = (endExecutionTime - beginExecutionTime).ToString("c")});
+            _logger.LogInformation("{MethodName}; Data; {@Data}", methodName, new {Response = response});
         }
 
         protected void ValidateLog(string methodName, Command command, Response response)
         {
+            _logger.LogInformation("{MethodName}; Data; {@Data}", methodName, new {Command = command});
+            _logger.LogInformation("{MethodName}; Data; {@Data}", methodName, response);
+
+
             _logger.LogInformation("{MethodName}; Data; {@Data};", nameof(ValidateLog),
                     new {Command = command, Response = response});
+
+
 
                 if (command != null && response != null)
                 {
@@ -40,8 +45,9 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                         _logger.LogWarning("{MethodName}; Data; {@Data};", methodName,
                             new
                             {
-                                Message = "Changed uniqueId detected", CommandUniqueId = command.UniqueId,
-                                ResponseUniqueId = command.UniqueId
+                                Message = "Changed uniqueId detected", 
+                                CommandUniqueId = command.UniqueId,
+                                ResponseUniqueId = response.UniqueId
                             });
                     }
                 }

@@ -5,7 +5,7 @@ using Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM;
 
 namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
 {
-    public class SyncWorkflow
+    public class SyncWorkflowElasticAPM
     {
         public static void RunSyncTasks()
         {

@@ -3,7 +3,7 @@ using Elastic.Apm;
 
 namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
 {
-    public class Workflow
+    public class WorkflowElasticAPM
     {
         public static async Task RunAsyncTasks()
         {

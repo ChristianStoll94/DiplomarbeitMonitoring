@@ -33,8 +33,8 @@ namespace Eps.Service.Demo.Monitoring.MicroService.Controllers
         {
             var rng = new Random();
 
-            var number = GetRandomNumber();
-            var number2 = GetRandomNumber2();
+            //var number = GetRandomNumberElasticAPM();
+            var number = GetRandomNumberOpenTelemetry();
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -45,10 +45,10 @@ namespace Eps.Service.Demo.Monitoring.MicroService.Controllers
             .ToArray();
         }
 
-        private int GetRandomNumber()
+        private int GetRandomNumberElasticAPM()
         {
             var random = new Random();
-            return Agent.Tracer.CurrentTransaction.CaptureSpan("GetRandomNumber", "RandomGeneration", (span) =>
+            return Agent.Tracer.CurrentTransaction.CaptureSpan("GetRandomNumberElasticAPM", "RandomGeneration", (span) =>
             {
                 Thread.Sleep(1500);
                 span.SetLabel("TestLabel", "I'm a Span");
@@ -56,11 +56,11 @@ namespace Eps.Service.Demo.Monitoring.MicroService.Controllers
             });
         }
 
-        private int GetRandomNumber2()
+        private int GetRandomNumberOpenTelemetry()
         {
             var random = new Random();
 
-            using (var activity = ActivitySource.StartActivity("GetRandomNumber2"))
+            using (var activity = ActivitySource.StartActivity("GetRandomNumberOpenTelemetry"))
             {
                 Thread.Sleep(1500);
                 activity.AddTag("TestLabel", "I'm a Span");

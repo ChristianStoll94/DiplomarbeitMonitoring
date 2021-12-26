@@ -14,12 +14,10 @@ namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
     public class HostedServiceOpenTelemetry : BackgroundService
     {
         protected readonly ILogger _logger;
-        private readonly IMonitoringProvider _monitoringProvider;
 
         public HostedServiceOpenTelemetry(ILogger<HostedServiceOpenTelemetry> logger, IMonitoringProvider monitoringProvider)
         {
             _logger = logger;
-            _monitoringProvider = monitoringProvider;
 
         }
 
@@ -36,8 +34,8 @@ namespace Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM
                     {
                         using (_logger.BeginElasticLogging())
                         {
-                            _logger.LogInformation("{MethodName}; {@Data}; {APMSource}", nameof(ExecuteAsync),
-                                new {Test = "test"}, "OpenTelemetry");
+                            _logger.LogInformation("{MethodName}; {@Data}", nameof(ExecuteAsync),
+                                new {Test = "test"});
 
                             activity.AddTag("MyTag", "SomeTag");
 

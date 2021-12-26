@@ -1,11 +1,5 @@
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using App.Metrics;
-using App.Metrics.Formatters.Prometheus;
-using Elastic.Apm.NetCoreAll;
 using Eps.Framework.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -16,13 +10,8 @@ using Eps.Service.Extensions.Monitoring.OpenTelemetry;
 using Eps.Service.Extensions.Swagger;
 using Microsoft.Extensions.Logging;
 using Eps.Service.Demo.Monitoring.HealthChecks;
-using Eps.Service.Demo.Monitoring.Services.ElasticAPM;
 using Eps.Service.Demo.Monitoring.Services.OpenTelemetryAPM;
 using Eps.Service.Extensions.Health;
-using Eps.Service.Extensions.Monitoring;
-using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 namespace Eps.Service.Demo.Monitoring
 {
@@ -57,7 +46,9 @@ namespace Eps.Service.Demo.Monitoring
             services.AddHealth(Configuration)
                 .AddCheck<SimpleHealthCheck>($"{nameof(SimpleHealthCheck)}");
 
-            services.AddHostedService<HostedService>();
+            //ElasticAPM Background Service
+            //services.AddHostedService<HostedServiceElasticAPM>();
+
             services.AddHostedService<HostedServiceOpenTelemetry>();
 
             services.AddSwagger(new AssemblyReader(Assembly.GetExecutingAssembly()), Configuration);
@@ -73,7 +64,8 @@ namespace Eps.Service.Demo.Monitoring
                 app.UseLogging(loggerFactory);
                 app.UseOpenTelemetryLoggingMiddleware();
 
-                app.UseMonitoring(Configuration);
+                //Elastic APM Monitoring
+                //app.UseMonitoring(Configuration);
 
                 app.UseMetricsAllEndpoints();
 

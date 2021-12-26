@@ -8,20 +8,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
 {
-    public class HostedService : BackgroundService
+    public class HostedServiceElasticAPM : BackgroundService
     {
         readonly ILogger _logger;
-        private readonly IMonitoringProvider _monitoringProvider;
 
-        public HostedService(ILogger<HostedService> logger, IMonitoringProvider monitoringProvider)
+        public HostedServiceElasticAPM(ILogger<HostedServiceElasticAPM> logger)
         {
             _logger = logger;
-            _monitoringProvider = monitoringProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //ToDo: Do better
             await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
@@ -30,13 +27,11 @@ namespace Eps.Service.Demo.Monitoring.Services.ElasticAPM
                 {
                     try
                     {
-                        _logger.LogInformation("{APMSource}", "Elastic");
-
                         transaction.SetLabel("MyLabel", "SomeLabel");
 
-                        SyncWorkflow.RunSyncTasks();
+                        SyncWorkflowElasticAPM.RunSyncTasks();
 
-                        await Workflow.RunAsyncTasks();
+                        await WorkflowElasticAPM.RunAsyncTasks();
                     }
                     catch (Exception ex)
                     {

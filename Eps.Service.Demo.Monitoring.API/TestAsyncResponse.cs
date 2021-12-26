@@ -46,6 +46,6 @@ namespace Eps.Service.Demo.Monitoring.API
 
         public string ErrorText { get; set; }
 
-        public string XXX { get; set; }
+        public string ResponseString { get; set; }
     }
 }

@@ -28,7 +28,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         public WelcomeResponse Execute([FromBody] WelcomeCommand command)
         {
             WelcomeResponse response = null;
-            DateTime beginExecutionTime = DateTime.UtcNow;
 
             int uniqueId = ((command == null) ? -1 : command.UniqueId);
             
@@ -38,7 +37,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                     if (command == null)
                     {
                         string errorText = "Command is not supported";
-                        _logger.LogError("{MethodName}; {@Data}", nameof(Execute), new { ErrorText = errorText });
+                        _logger.LogError("{MethodName}; Data; {@Data}", nameof(Execute), new { ErrorText = errorText });
                         response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnknownCommand, errorText);
                     }
                     else
@@ -48,13 +47,12 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "{methodName}; {ErrorType}; {ErrorText}", nameof(Execute), "Unexpected Exception", ex.Message);
+                    _logger.LogError(ex, "{methodName}; Data; {Data}", nameof(Execute), new {ErrorText = "Unexpected Exception" });
                     response = new WelcomeResponse(uniqueId, WelcomeResponse.WelcomeErrorCodes.UnexpectedException, ex.Message);
                 }
                 finally
                 {
-                    DateTime endExecutionTime = DateTime.UtcNow;
-                    LogResponse(nameof(Execute), response, beginExecutionTime, endExecutionTime);
+                    LogResponse(nameof(Execute), response);
                 }
 
                 return response;
@@ -72,7 +70,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         private WelcomeResponse ValidateParameters(WelcomeCommand command)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug("{MethodName}; Command; {@Data}", nameof(ValidateParameters), new { Command = command });
+                _logger.LogDebug("{MethodName}; Data; {@Data}", nameof(ValidateParameters), new { Command = command });
 
             return new WelcomeResponse(command.UniqueId, WelcomeResponse.WelcomeErrorCodes.NoError, string.Empty);
         }

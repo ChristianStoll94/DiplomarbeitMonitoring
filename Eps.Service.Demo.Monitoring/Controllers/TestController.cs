@@ -46,7 +46,6 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         private TestResponse Execute(TestCommand command)
         {
             TestResponse response = null;
-            DateTime beginExecutionTime = DateTime.UtcNow;
 
             int uniqueId = ((command == null) ? -1 : command.UniqueId);
 
@@ -57,7 +56,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
                 if (command == null)
                 {
                     string errorText = "Command is not supported";
-                    _logger.LogError("{MethodName}; {@Data}", nameof(Execute), new {ErrorText = errorText});
+                    _logger.LogError("{MethodName}; Data; {@Data}", nameof(Execute), new {ErrorText = errorText});
                     response = new TestResponse(uniqueId, TestResponse.TestErrorCodes.UnknownCommand, errorText);
                 }
                 else
@@ -72,8 +71,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             }
             finally
             {
-                DateTime endExecutionTime = DateTime.UtcNow;
-                LogResponse(nameof(Execute), response, beginExecutionTime, endExecutionTime);
+                LogResponse(nameof(Execute), response);
             }
             
             return response;
@@ -103,7 +101,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
             }
             catch (ExecutionException ex)
             {
-                _logger.LogError(ex, "{MethodName}; Data; {@Data}", nameof(Execute), new {Command = command, ErrorText = ex.Message});
+                _logger.LogError(ex, "{MethodName}; Data; {@Data}", nameof(Execute), new {Command = command, ErrorText = "Execution Exception" });
                 response = new TestResponse(command.UniqueId, TestResponse.TestErrorCodes.ExecutionError, ex.Content.ToMessage());
             }
 
@@ -113,7 +111,7 @@ namespace Eps.Service.Demo.Monitoring.Controllers
         private TestResponse ValidateParameters(TestCommand command)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug("{MethodName}; Command; {@Data}", nameof(ValidateParameters), new {Command = command});
+                _logger.LogDebug("{MethodName}; Data; {@Data}", nameof(ValidateParameters), new {Command = command});
 
             if (!command.Valid)
             {
